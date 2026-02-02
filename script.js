@@ -1,43 +1,65 @@
-const inputs = ['currAC', 'currDC', 'buyAC', 'buyDC', 'targetPerc'];
-inputs.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+const fields = ['currAC', 'currDC', 'forAC', 'forDC', 'buyAC', 'buyDC', 'targetPerc'];
+fields.forEach(f => document.getElementById(f).addEventListener('input', calculate));
 
 function calculate() {
-    const cAC = parseInt(document.getElementById('currAC').value) || 0;
-    const cDC = parseInt(document.getElementById('currDC').value) || 0;
-    const bAC = parseInt(document.getElementById('buyAC').value) || 0;
-    const bDC = parseInt(document.getElementById('buyDC').value) || 0;
-    const target = parseInt(document.getElementById('targetPerc').value) || 78;
+    const vals = {};
+    fields.forEach(f => vals[f] = parseInt(document.getElementById(f).value) || 0);
 
-    const total = cAC + cDC;
-    const finalAC = cAC + bAC - bDC;
-    const finalDC = cDC + bDC - bAC;
+    const total = vals.currAC + vals.currDC;
+    const finalAC = vals.currAC + vals.buyAC - vals.buyDC;
+    const finalDC = vals.currDC + vals.buyDC - vals.buyAC;
     const percAC = ((finalAC / total) * 100).toFixed(1);
 
-    document.getElementById('resTotal').innerText = total;
     document.getElementById('resRatio').innerText = `${percAC}% AC / ${(100-percAC).toFixed(1)}% DC`;
-    document.getElementById('progressBar').style.width = `${percAC}%`;
-    document.getElementById('spareAC').innerText = bDC * 2;
-    document.getElementById('spareDC').innerText = bAC * 2;
 
-    const insight = document.getElementById('insight');
-    if (Math.abs(percAC - target) <= 1) {
-        insight.className = "insight-box bg-success";
-        insight.innerText = "✅ היעד הושג!";
+    const coverAC = finalAC - vals.forAC;
+    const coverDC = finalDC - vals.forDC;
+    
+    document.getElementById('coverAC').innerText = coverAC >= 0 ? `עודף (${coverAC})` : `חסר (${Math.abs(coverAC)})!`;
+    document.getElementById('coverDC').innerText = coverDC >= 0 ? `עודף (${coverDC})` : `חסר (${Math.abs(coverDC)})!`;
+
+    const alert = document.getElementById('statusAlert');
+    if (coverAC < 0 || coverDC < 0) {
+        alert.className = "alert alert-warn";
+        alert.innerText = "🚨 אזהרה: המלאי לא מכסה את הפורקאסט";
     } else {
-        insight.className = "insight-box bg-warning";
-        insight.innerText = percAC < target ? "יש להגדיל כמות קיטי AC" : "המלאי מוטה ל-AC מעבר ליעד";
+        alert.className = "alert alert-ok";
+        alert.innerText = "✅ תכנון מלאי תקין";
     }
 }
 
+function addRow(sku = '', desc = '', qty = '') {
+    const tbody = document.getElementById('bomBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" value="${sku}" placeholder="מק"ט"></td>
+        <td><input type="text" value="${desc}" placeholder="תיאור"></td>
+        <td><input type="number" value="${qty}" placeholder="0"></td>
+        <td class="no-export"><button class="btn-delete" onclick="this.parentElement.parentElement.remove()">🗑</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
 function exportToPDF() {
-    const element = document.getElementById('content-to-export');
+    const element = document.getElementById('report');
+    // הוספת קלאס זמני להסתרת כפתורים בייצוא
+    element.classList.add('no-export-pdf');
+    
     const opt = {
         margin: 10,
-        filename: 'Inventory_Report.pdf',
+        filename: 'Purchase_Report.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(element).save();
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove('no-export-pdf');
+    });
 }
+
+// הוספת שורות ראשוניות ריקות או לדוגמה
+addRow('', 'ספקי כוח AC', '');
+addRow('', 'ספקי כוח DC', '');
+
 calculate();
