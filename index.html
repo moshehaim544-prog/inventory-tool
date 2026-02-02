@@ -16,67 +16,31 @@
 
         <div class="grid">
             <section class="card inputs no-print">
-                <div class="section-title">
-                    <span class="icon">📊</span> 
-                    <h2>נתוני בסיס ופורקאסט</h2>
+                <div class="section-title"><h2>📊 נתוני בסיס ופורקאסט</h2></div>
+                <div class="input-row">
+                    <div><label>מלאי AC נוכחי:</label><input type="number" id="currAC" value="130"></div>
+                    <div><label>מלאי DC נוכחי:</label><input type="number" id="currDC" value="74"></div>
                 </div>
-                
-                <div class="input-group-wrapper">
-                    <div class="input-row">
-                        <div>
-                            <label title="כמות השרתים עם ספק AC שיש כרגע במחסן">מלאי AC נוכחי:</label>
-                            <input type="number" id="currAC" value="130">
-                        </div>
-                        <div>
-                            <label title="כמות השרתים עם ספק DC שיש כרגע במחסן">מלאי DC נוכחי:</label>
-                            <input type="number" id="currDC" value="74">
-                        </div>
-                    </div>
-                    <div class="input-row">
-                        <div>
-                            <label title="צפי מכירות לשרתי AC בתקופה הקרובה">תחזית מכירות AC:</label>
-                            <input type="number" id="forAC" value="34">
-                        </div>
-                        <div>
-                            <label title="צפי מכירות לשרתי DC בתקופה הקרובה">תחזית מכירות DC:</label>
-                            <input type="number" id="forDC" value="4">
-                        </div>
-                    </div>
+                <div class="input-row">
+                    <div><label>תחזית מכירות AC:</label><input type="number" id="forAC" value="34"></div>
+                    <div><label>תחזית מכירות DC:</label><input type="number" id="forDC" value="4"></div>
                 </div>
-
                 <hr>
-                
-                <div class="section-title">
-                    <span class="icon">🛒</span> 
-                    <h2>סימולציית רכש</h2>
-                </div>
+                <div class="section-title"><h2>🛒 סימולציית רכש</h2></div>
                 <div class="input-row highlight">
-                    <div>
-                        <label>הזמנת קיט AC (המרה):</label>
-                        <input type="number" id="buyAC" value="0">
-                    </div>
-                    <div>
-                        <label>הזמנת קיט DC (המרה):</label>
-                        <input type="number" id="buyDC" value="0">
-                    </div>
+                    <div><label>הזמנת קיט AC (המרה):</label><input type="number" id="buyAC" value="0"></div>
+                    <div><label>הזמנת קיט DC (המרה):</label><input type="number" id="buyDC" value="0"></div>
                 </div>
-                
                 <div class="target-row">
                     <label>יעד אחוז AC מבוקש (%):</label>
                     <input type="number" id="targetPerc" value="78">
                 </div>
-
                 <button onclick="optimizePurchase()" class="btn-opt no-print">✨ חשב המלצה אופטימלית</button>
             </section>
 
             <section class="card results">
-                <div class="section-title">
-                    <span class="icon">💡</span> 
-                    <h2>ניתוח והמלצה</h2>
-                </div>
-                
+                <div class="section-title"><h2>💡 ניתוח והמלצה</h2></div>
                 <div id="statusAlert" class="alert"></div>
-
                 <div class="stat-card">
                     <div class="stat-label">יחס מלאי סופי:</div>
                     <div id="resRatio" class="stat-value">--</div>
@@ -85,33 +49,18 @@
                         <div id="targetMarker" class="target-marker"></div>
                     </div>
                 </div>
-
                 <div class="spares-grid">
-                    <div class="spare-item">
-                        <small>ספקי AC שיישארו כחלפים</small>
-                        <span id="spareAC">0</span>
-                    </div>
-                    <div class="spare-item">
-                        <small>ספקי DC שיישארו כחלפים</small>
-                        <span id="spareDC">0</span>
-                    </div>
+                    <div class="spare-item"><small>ספקי AC כחלפים</small><span id="spareAC">0</span></div>
+                    <div class="spare-item"><small>ספקי DC כחלפים</small><span id="spareDC">0</span></div>
                 </div>
-
                 <div class="bom-area">
                     <h3>רשימת רכש מוצעת</h3>
-                    <table id="bomTable" class="bom-table">
-                        <thead>
-                            <tr>
-                                <th>תיאור/מק"ט</th>
-                                <th>כמות</th>
-                                <th class="no-print"></th>
-                            </tr>
-                        </thead>
+                    <table class="bom-table">
+                        <thead><tr><th>תיאור/מק"ט</th><th>כמות</th><th class="no-print"></th></tr></thead>
                         <tbody id="bomBody"></tbody>
                     </table>
                     <button onclick="addRow()" class="btn-add no-print">+ הוסף פריט ידנית</button>
                 </div>
-
                 <button onclick="exportToPDF()" class="btn-main no-print">📄 הורד דוח PDF לרכש</button>
             </section>
         </div>
