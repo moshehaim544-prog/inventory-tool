@@ -3,65 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimizer - ניהול מלאי חכם</title>
+    <title>Optimizer Pro - ניהול מלאי ותרחישים</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div class="container" id="report">
         <header>
-            <h1>מערכת אופטימיזציית מלאי PS</h1>
-            <div class="subtitle">כלי תומך החלטה להמרות ורכש</div>
+            <h1>אופטימיזציית מלאי - תרחישים וסיכונים</h1>
+            <div class="scenario-selector no-print">
+                <label>בחר תרחיש:</label>
+                <select id="scenarioPicker" onchange="loadScenario()">
+                    <option value="scenario1">תרחיש א' (ברירת מחדל)</option>
+                    <option value="scenario2">תרחיש ב'</option>
+                    <option value="scenario3">תרחיש ג'</option>
+                </select>
+            </div>
         </header>
 
         <div class="grid">
             <section class="card inputs no-print">
-                <div class="section-title"><h2>📊 נתוני בסיס ופורקאסט</h2></div>
+                <div class="section-title"><h2>📊 תחזית מכירות משוקללת</h2></div>
+                <div class="input-table-wrapper">
+                    <table class="forecast-table">
+                        <thead>
+                            <tr>
+                                <th>סוג</th>
+                                <th>כמות</th>
+                                <th>סיכוי (%)</th>
+                                <th>משוקלל</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AC</td>
+                                <td><input type="number" id="forAC" value="40" oninput="calculate()"></td>
+                                <td><input type="number" id="probAC" value="60" oninput="calculate()"></td>
+                                <td id="weightedAC">24</td>
+                            </tr>
+                            <tr>
+                                <td>DC</td>
+                                <td><input type="number" id="forDC" value="10" oninput="calculate()"></td>
+                                <td><input type="number" id="probDC" value="100" oninput="calculate()"></td>
+                                <td id="weightedDC">10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <hr>
+                <div class="section-title"><h2>🛒 מלאי נוכחי ורכש</h2></div>
                 <div class="input-row">
                     <div><label>מלאי AC נוכחי:</label><input type="number" id="currAC" value="130"></div>
                     <div><label>מלאי DC נוכחי:</label><input type="number" id="currDC" value="74"></div>
                 </div>
-                <div class="input-row">
-                    <div><label>תחזית מכירות AC:</label><input type="number" id="forAC" value="34"></div>
-                    <div><label>תחזית מכירות DC:</label><input type="number" id="forDC" value="4"></div>
-                </div>
-                <hr>
-                <div class="section-title"><h2>🛒 סימולציית רכש</h2></div>
                 <div class="input-row highlight">
-                    <div><label>הזמנת קיט AC (המרה):</label><input type="number" id="buyAC" value="0"></div>
-                    <div><label>הזמנת קיט DC (המרה):</label><input type="number" id="buyDC" value="0"></div>
+                    <div><label>הזמנת קיט AC:</label><input type="number" id="buyAC" value="0"></div>
+                    <div><label>הזמנת קיט DC:</label><input type="number" id="buyDC" value="0"></div>
                 </div>
                 <div class="target-row">
                     <label>יעד אחוז AC מבוקש (%):</label>
                     <input type="number" id="targetPerc" value="78">
                 </div>
-                <button onclick="optimizePurchase()" class="btn-opt no-print">✨ חשב המלצה אופטימלית</button>
+                <button onclick="optimizePurchase()" class="btn-opt no-print">✨ חשב המלצה לפי פורקאסט משוקלל</button>
             </section>
 
             <section class="card results">
-                <div class="section-title"><h2>💡 ניתוח והמלצה</h2></div>
+                <div class="section-title"><h2>💡 ניתוח סיכונים</h2></div>
                 <div id="statusAlert" class="alert"></div>
                 <div class="stat-card">
-                    <div class="stat-label">יחס מלאי סופי:</div>
                     <div id="resRatio" class="stat-value">--</div>
                     <div class="progress-container">
                         <div id="progressBar" class="progress-bar"></div>
                         <div id="targetMarker" class="target-marker"></div>
                     </div>
                 </div>
-                <div class="spares-grid">
-                    <div class="spare-item"><small>ספקי AC כחלפים</small><span id="spareAC">0</span></div>
-                    <div class="spare-item"><small>ספקי DC כחלפים</small><span id="spareDC">0</span></div>
-                </div>
                 <div class="bom-area">
-                    <h3>רשימת רכש מוצעת</h3>
+                    <h3>BOM - רשימת פריטים להזמנה</h3>
                     <table class="bom-table">
-                        <thead><tr><th>תיאור/מק"ט</th><th>כמות</th><th class="no-print"></th></tr></thead>
                         <tbody id="bomBody"></tbody>
                     </table>
-                    <button onclick="addRow()" class="btn-add no-print">+ הוסף פריט ידנית</button>
+                    <button onclick="addRow()" class="btn-add no-print">+ הוסף מק"ט ידנית</button>
                 </div>
-                <button onclick="exportToPDF()" class="btn-main no-print">📄 הורד דוח PDF לרכש</button>
+                <button onclick="exportToPDF()" class="btn-main no-print">📄 הפק דוח תרחיש (PDF)</button>
             </section>
         </div>
     </div>
