@@ -3,114 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת אופטימיזציית מלאי - PS Kits</title>
+    <title>מערכת ניהול מלאי - גרסה יציבה</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div class="container" id="report">
         <header>
-            <h1>ניהול מלאי וסיכונים חכם</h1>
-            <div class="subtitle">כלי אופטימיזציה לשרשרת אספקה (PS Kits)</div>
-            <div class="scenario-selector no-print">
-                <label for="scenarioPicker">בחר תרחיש:</label>
-                <select id="scenarioPicker" onchange="loadScenario()">
-                    <option value="scenario1">תרחיש א' (ברירת מחדל)</option>
-                    <option value="scenario2">תרחיש ב' (אופטימי)</option>
-                    <option value="scenario3">תרחיש ג' (פסימי)</option>
-                    <option value="scenario4">תרחיש ד' (מותאם אישית)</option>
-                </select>
-                <button onclick="saveCurrentScenario()" class="btn-sm">שמור תרחיש</button>
-            </div>
+            <h1>מערכת אופטימיזציית מלאי PS</h1>
+            <p>ניהול תרחישים, סיכונים ורכש</p>
         </header>
 
-        <div class="grid">
-            <section class="card inputs no-print">
-                <div class="section-header"><h2>📊 נתוני קלט</h2></div>
+        <div class="main-grid">
+            <section class="card">
+                <div class="card-header">📋 הזנת נתונים ותרחישים</div>
                 
-                <h3>תחזית מכירות</h3>
-                <div class="input-table-wrapper">
-                    <table class="forecast-table">
-                        <thead>
-                            <tr>
-                                <th>סוג</th>
-                                <th>כמות צפויה</th>
-                                <th>% סיכוי התממשות</th>
-                                <th>פורקאסט משוקלל</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>AC</td>
-                                <td><input type="number" id="forAC" value="40"></td>
-                                <td><input type="number" id="probAC" value="60" min="0" max="100"></td>
-                                <td id="weightedAC" class="read-only"></td>
-                            </tr>
-                            <tr>
-                                <td>DC</td>
-                                <td><input type="number" id="forDC" value="10"></td>
-                                <td><input type="number" id="probDC" value="100" min="0" max="100"></td>
-                                <td id="weightedDC" class="read-only"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="input-section">
+                    <label>בחר תרחיש עבודה:</label>
+                    <select id="scenario" onchange="calculate()">
+                        <option value="1">תרחיש א'</option>
+                        <option value="2">תרחיש ב'</option>
+                    </select>
+                </div>
+
+                <h3>תחזית מכירות (Forecast)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>סוג</th>
+                            <th>כמות</th>
+                            <th>סיכוי (%)</th>
+                            <th>משוקלל</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AC</td>
+                            <td><input type="number" id="forAC" value="40" oninput="calculate()"></td>
+                            <td><input type="number" id="probAC" value="60" oninput="calculate()"></td>
+                            <td id="weightAC" class="bold">24</td>
+                        </tr>
+                        <tr>
+                            <td>DC</td>
+                            <td><input type="number" id="forDC" value="10" oninput="calculate()"></td>
+                            <td><input type="number" id="probDC" value="100" oninput="calculate()"></td>
+                            <td id="weightDC" class="bold">10</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>מלאי ורכש</h3>
+                <div class="input-grid">
+                    <div class="field">
+                        <label>מלאי AC נוכחי</label>
+                        <input type="number" id="currAC" value="130" oninput="calculate()">
+                    </div>
+                    <div class="field">
+                        <label>מלאי DC נוכחי</label>
+                        <input type="number" id="currDC" value="74" oninput="calculate()">
+                    </div>
+                    <div class="field highlight">
+                        <label>הזמנת קיט AC</label>
+                        <input type="number" id="buyAC" value="0" oninput="calculate()">
+                    </div>
+                    <div class="field highlight">
+                        <label>הזמנת קיט DC</label>
+                        <input type="number" id="buyDC" value="0" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>יעד אחוז AC מבוקש (%)</label>
+                    <input type="number" id="target" value="78" oninput="calculate()">
                 </div>
                 
-                <h3>מצב מלאי ורכש</h3>
-                <div class="input-row">
-                    <div><label>מלאי AC נוכחי:</label><input type="number" id="currAC" value="130"></div>
-                    <div><label>מלאי DC נוכחי:</label><input type="number" id="currDC" value="74"></div>
-                </div>
-                <div class="input-row highlight">
-                    <div><label>קיטים AC להזמנה (המרה):</label><input type="number" id="buyAC" value="0"></div>
-                    <div><label>קיטים DC להזמנה (המרה):</label><input type="number" id="buyDC" value="0"></div>
-                </div>
-                
-                <div class="target-row">
-                    <label>יעד אחוז AC בסוף התהליך (%):</label>
-                    <input type="number" id="targetPerc" value="78" min="0" max="100">
-                </div>
-                <button onclick="optimizePurchase()" class="btn-primary btn-full no-print">✨ חשב המלצה אופטימלית</button>
+                <button class="btn-opt no-print" onclick="optimize()">✨ חשב המלצה אופטימלית</button>
             </section>
 
-            <section class="card results">
-                <div class="section-header"><h2>💡 ניתוח תוצאות</h2></div>
-                <div id="statusAlert" class="alert"></div>
-
-                <div class="result-box">
-                    <h3>יחס מלאי סופי:</h3>
-                    <div id="resRatio" class="big-text">--</div>
-                    <div class="progress-container">
-                        <div id="progressBar" class="progress-bar"></div>
-                        <div id="targetMarker" class="target-marker"></div>
-                    </div>
-                </div>
-
-                <div class="result-box">
-                    <h3>חשיפת מלאי לחלפים:</h3>
-                    <div class="spares-grid">
-                        <div class="spare-item"><small>AC ספקים (עודפים)</small><span id="spareAC">0</span></div>
-                        <div class="spare-item"><small>DC ספקים (עודפים)</small><span id="spareDC">0</span></div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <h3>השוואת פורקאסטים:</h3>
-                    <canvas id="forecastChart"></canvas>
-                </div>
-
-                <div class="bom-area">
-                    <h3>רשימת רכש מפורטת (BOM):</h3>
-                    <table class="bom-table">
-                        <thead><tr><th>תיאור/מק"ט</th><th>כמות</th><th class="no-print"></th></tr></thead>
-                        <tbody id="bomBody">
-                            </tbody>
-                    </table>
-                    <button onclick="addRow()" class="btn-secondary no-print">+ הוסף פריט ידנית</button>
-                </div>
+            <section class="card">
+                <div class="card-header">📊 ניתוח והמלצות</div>
                 
-                <button onclick="exportToPDF()" class="btn-primary btn-full no-print">📄 הורד דוח תרחיש (PDF)</button>
+                <div id="status" class="alert">--</div>
+
+                <div class="result-item">
+                    <span>יחס מלאי סופי:</span>
+                    <span id="finalRatio" class="bold">--</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progBar" class="progress-bar"></div>
+                </div>
+
+                <div class="spares-grid">
+                    <div class="spare-box">
+                        <small>חלפי AC שיישארו</small>
+                        <div id="spareAC" class="val">0</div>
+                    </div>
+                    <div class="spare-box">
+                        <small>חלפי DC שיישארו</small>
+                        <div id="spareDC" class="val">0</div>
+                    </div>
+                </div>
+
+                <h3>רשימת מק"טים לרכש (BOM)</h3>
+                <table class="bom-table">
+                    <thead>
+                        <tr>
+                            <th>תיאור/מק"ט</th>
+                            <th style="width: 80px;">כמות</th>
+                            <th class="no-print"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="bomBody">
+                        </tbody>
+                </table>
+                <button class="btn-add no-print" onclick="addRow()">+ הוסף מק"ט ידנית</button>
+
+                <button class="btn-print no-print" onclick="window.print()">📄 הדפס דוח PDF</button>
             </section>
         </div>
     </div>
