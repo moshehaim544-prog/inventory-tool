@@ -2,69 +2,85 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מחשבון המרת מלאי - שרתים</title>
+    <title>ניהול מלאי ופורקאסט - PS Kits</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-    <div class="container" id="content-to-export">
+    <div class="container" id="report">
         <header>
-            <h1>ניהול ואופטימיזציית מלאי ספקי כוח</h1>
-            <p>סימולטור המרות - מבוסס פורקאסט ויעדי מלאי</p>
+            <h1>מערכת תכנון מלאי חכמה</h1>
+            <p>ניתוח המרות ספקי כוח מול תחזית מכירות</p>
         </header>
 
-        <main class="grid">
-            <section class="card inputs">
-                <h2>נתוני קלט</h2>
-                <div class="input-group">
-                    <label>מלאי AC נוכחי:</label>
-                    <input type="number" id="currAC" value="130">
+        <div class="grid">
+            <section class="card">
+                <h2>1. מצב מלאי ותחזית</h2>
+                <div class="input-row">
+                    <div>
+                        <label>מלאי AC נוכחי:</label>
+                        <input type="number" id="currAC" value="130">
+                    </div>
+                    <div>
+                        <label>תחזית מכירות AC:</label>
+                        <input type="number" id="forAC" value="34">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>מלאי DC נוכחי:</label>
-                    <input type="number" id="currDC" value="74">
+                <div class="input-row">
+                    <div>
+                        <label>מלאי DC נוכחי:</label>
+                        <input type="number" id="currDC" value="74">
+                    </div>
+                    <div>
+                        <label>תחזית מכירות DC:</label>
+                        <input type="number" id="forDC" value="4">
+                    </div>
                 </div>
                 <hr>
-                <div class="input-group highlight">
-                    <label>הזמנת קיטי AC (להסבת DC):</label>
-                    <input type="number" id="buyAC" placeholder="0">
+                <h2>2. תרחיש רכש (Kits)</h2>
+                <div class="input-row">
+                    <div class="highlight-ac">
+                        <label>קיטי AC להזמנה:</label>
+                        <input type="number" id="buyAC" value="0">
+                    </div>
+                    <div class="highlight-dc">
+                        <label>קיטי DC להזמנה:</label>
+                        <input type="number" id="buyDC" value="0">
+                    </div>
                 </div>
-                <div class="input-group highlight">
-                    <label>הזמנת קיטי DC (להסבת AC):</label>
-                    <input type="number" id="buyDC" placeholder="0">
-                </div>
-                <div class="input-group">
-                    <label>יעד אחוז AC מבוקש (%):</label>
-                    <input type="number" id="targetPerc" value="78">
-                </div>
+                <label>יעד אחוז AC מבוקש (%):</label>
+                <input type="number" id="targetPerc" value="78">
             </section>
 
-            <section class="card outputs">
-                <h2>סטטוס מלאי סופי</h2>
-                <div class="res-row">
-                    <span>סה"כ יחידות:</span>
-                    <span id="resTotal" class="bold">204</span>
-                </div>
-                <div class="res-row">
-                    <span>יחס סופי:</span>
-                    <span id="resRatio" class="bold">--</span>
-                </div>
-                <div class="progress-container">
-                    <div id="progressBar" class="progress-bar"></div>
-                </div>
-                
-                <div class="spares-box">
-                    <h3>מלאי חלפים (Spares) שנוצר:</h3>
-                    <div class="spare-item"><span>ספקים בודדים AC:</span><span id="spareAC">0</span></div>
-                    <div class="spare-item"><span>ספקים בודדים DC:</span><span id="spareDC">0</span></div>
+            <section class="card">
+                <h2>3. ניתוח ותוצאות</h2>
+                <div id="statusAlert" class="alert"></div>
+                <div class="stat-grid">
+                    <div class="stat-item"><span>יחס מלאי סופי:</span><span id="resRatio" class="bold">--</span></div>
+                    <div class="stat-item"><span>סטטוס AC:</span><span id="coverAC" class="bold">--</span></div>
+                    <div class="stat-item"><span>סטטוס DC:</span><span id="coverDC" class="bold">--</span></div>
                 </div>
 
-                <div id="insight" class="insight-box">הזן נתונים...</div>
-                
-                <button onclick="exportToPDF()" class="btn-export">הורד דוח PDF לרכש</button>
+                <div class="bom-section">
+                    <h3>פירוט מק"טים ורכיבים להזמנה</h3>
+                    <table class="bom-table" id="bomTable">
+                        <thead>
+                            <tr>
+                                <th>מק"ט</th>
+                                <th>תיאור</th>
+                                <th>כמות</th>
+                                <th class="no-export">פעולה</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bomBody">
+                            </tbody>
+                    </table>
+                    <button onclick="addRow()" class="btn-secondary no-export">+ הוסף מק"ט ידנית</button>
+                </div>
+
+                <button onclick="exportToPDF()" class="btn-main">ייצא דוח רכש סופי (PDF)</button>
             </section>
-        </main>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
