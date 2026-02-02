@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת ניהול מלאי - גרסה יציבה</title>
+    <title>מערכת אופטימיזציית מלאי PS</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container" id="report">
@@ -20,7 +21,7 @@
                 
                 <div class="input-section">
                     <label>בחר תרחיש עבודה:</label>
-                    <select id="scenario" onchange="calculate()">
+                    <select id="scenario" onchange="loadScenarioData()">
                         <option value="1">תרחיש א'</option>
                         <option value="2">תרחיש ב'</option>
                     </select>
@@ -105,7 +106,7 @@
                 </div>
 
                 <h3>רשימת מק"טים לרכש (BOM)</h3>
-                <table class="bom-table">
+                <table class="bom-table" id="bomTable">
                     <thead>
                         <tr>
                             <th>תיאור/מק"ט</th>
@@ -114,11 +115,14 @@
                         </tr>
                     </thead>
                     <tbody id="bomBody">
-                        </tbody>
+                    </tbody>
                 </table>
                 <button class="btn-add no-print" onclick="addRow()">+ הוסף מק"ט ידנית</button>
 
-                <button class="btn-print no-print" onclick="window.print()">📄 הדפס דוח PDF</button>
+                <div class="export-buttons">
+                    <button class="btn-print no-print" onclick="window.print()">📄 דוח PDF</button>
+                    <button class="btn-excel no-print" onclick="exportToExcel()">📥 טבלת רכש (Excel)</button>
+                </div>
             </section>
         </div>
     </div>
