@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון המרת מלאי - שרתים</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container" id="content-to-export">
+        <header>
+            <h1>ניהול ואופטימיזציית מלאי ספקי כוח</h1>
+            <p>סימולטור המרות - מבוסס פורקאסט ויעדי מלאי</p>
+        </header>
+
+        <main class="grid">
+            <section class="card inputs">
+                <h2>נתוני קלט</h2>
+                <div class="input-group">
+                    <label>מלאי AC נוכחי:</label>
+                    <input type="number" id="currAC" value="130">
+                </div>
+                <div class="input-group">
+                    <label>מלאי DC נוכחי:</label>
+                    <input type="number" id="currDC" value="74">
+                </div>
+                <hr>
+                <div class="input-group highlight">
+                    <label>הזמנת קיטי AC (להסבת DC):</label>
+                    <input type="number" id="buyAC" placeholder="0">
+                </div>
+                <div class="input-group highlight">
+                    <label>הזמנת קיטי DC (להסבת AC):</label>
+                    <input type="number" id="buyDC" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label>יעד אחוז AC מבוקש (%):</label>
+                    <input type="number" id="targetPerc" value="78">
+                </div>
+            </section>
+
+            <section class="card outputs">
+                <h2>סטטוס מלאי סופי</h2>
+                <div class="res-row">
+                    <span>סה"כ יחידות:</span>
+                    <span id="resTotal" class="bold">204</span>
+                </div>
+                <div class="res-row">
+                    <span>יחס סופי:</span>
+                    <span id="resRatio" class="bold">--</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                
+                <div class="spares-box">
+                    <h3>מלאי חלפים (Spares) שנוצר:</h3>
+                    <div class="spare-item"><span>ספקים בודדים AC:</span><span id="spareAC">0</span></div>
+                    <div class="spare-item"><span>ספקים בודדים DC:</span><span id="spareDC">0</span></div>
+                </div>
+
+                <div id="insight" class="insight-box">הזן נתונים...</div>
+                
+                <button onclick="exportToPDF()" class="btn-export">הורד דוח PDF לרכש</button>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
