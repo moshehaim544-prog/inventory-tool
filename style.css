@@ -1,36 +1,27 @@
-:root { --p: #2563eb; --s: #8b5cf6; --bg: #f1f5f9; --txt: #1e293b; --err: #ef4444; --ok: #22c55e; }
-body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--txt); direction: rtl; margin: 0; padding: 20px; line-height: 1.5; }
+:root { --p: #2563eb; --s: #8b5cf6; --bg: #f1f5f9; --txt: #1e293b; --err: #ef4444; --ok: #22c55e; --excel: #16a34a; }
+body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--txt); direction: rtl; margin: 0; padding: 20px; }
 .container { max-width: 1200px; margin: auto; }
 header { text-align: center; margin-bottom: 30px; }
-h1 { margin: 0; color: var(--p); }
-
 .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px; }
 .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 .card-header { font-weight: bold; font-size: 1.2rem; border-bottom: 2px solid var(--bg); margin-bottom: 20px; padding-bottom: 10px; color: var(--p); }
-
 .data-table, .bom-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 .data-table th, .data-table td, .bom-table th, .bom-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: center; }
-.data-table th { background: #f8fafc; }
-
-.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-.field { margin-bottom: 15px; }
-.field label { display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: 600; }
-input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
 .highlight { background: #eff6ff; padding: 10px; border-radius: 8px; border: 1px dashed var(--p); }
-
-.btn-opt { width: 100%; background: var(--s); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
-.btn-add { background: none; border: 1px solid #cbd5e1; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; }
-.btn-print { width: 100%; background: var(--p); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-
+.btn-opt { width: 100%; background: var(--s); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
+.btn-print, .btn-excel { flex: 1; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.btn-print { background: var(--p); }
+.btn-excel { background: var(--excel); }
+.export-buttons { display: flex; gap: 10px; margin-top: 10px; }
 .alert { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; }
 .bg-ok { background: #dcfce7; color: #166534; }
 .bg-err { background: #fee2e2; color: #991b1b; }
-
 .progress-container { background: #e2e8f0; height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
 .progress-bar { background: var(--p); height: 100%; width: 0%; transition: 0.3s; }
-
 .spares-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 .spare-box { background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }
 .val { font-size: 1.5rem; font-weight: bold; color: var(--s); }
 .bold { font-weight: bold; }
-@media print { .no-print { display: none !important; } .card { box-shadow: none; border: 1px solid #eee; } }
+@media print { .no-print { display: none !important; } }
