@@ -22,7 +22,6 @@ function calculate(shouldSave = true) {
         if (shouldSave) localStorage.setItem(`scenario_${scenarioId}_${f}`, v[f]);
     });
 
-    // 1. חישוב פורקאסט משוקלל (רצפת ייצור)
     let wAC = Math.ceil(v.forAC * v.probAC / 100);
     let wDC = Math.ceil(v.forDC * v.probDC / 100);
     document.getElementById('weightAC').innerText = wAC;
@@ -31,7 +30,6 @@ function calculate(shouldSave = true) {
     let total = v.currAC + v.currDC;
     if (total === 0) return;
 
-    // 2. חישוב מצב סופי
     let finalAC = v.currAC + v.buyAC - v.buyDC;
     let finalDC = v.currDC + v.buyDC - v.buyAC;
     let percAC = ((finalAC / total) * 100).toFixed(1);
@@ -39,17 +37,16 @@ function calculate(shouldSave = true) {
     document.getElementById('finalRatio').innerText = `${percAC}% AC / ${(100-percAC).toFixed(1)}% DC`;
     document.getElementById('progBar').style.width = percAC + "%";
 
-    // 3. בדיקת חשיפה (האם אנחנו מתחת לרצפה?)
     let alert = document.getElementById('status');
     if (finalAC < wAC) {
         alert.className = "alert bg-err";
-        alert.innerText = `🚨 חוסר ב-AC: חסרות ${wAC - finalAC} יחידות לכיסוי הפורקאסט!`;
+        alert.innerText = `🚨 חוסר ב-AC: חסרות ${wAC - finalAC} יחידות!`;
     } else if (finalDC < wDC) {
         alert.className = "alert bg-err";
-        alert.innerText = `🚨 חוסר ב-DC: חסרות ${wDC - finalDC} יחידות לכיסוי הפורקאסט!`;
+        alert.innerText = `🚨 חוסר ב-DC: חסרות ${wDC - finalDC} יחידות!`;
     } else {
         alert.className = "alert bg-ok";
-        alert.innerText = "✅ המלאי מכסה את הפורקאסט ומקיים את היעד";
+        alert.innerText = "✅ המלאי תקין ומכסה את הפורקאסט";
     }
 
     document.getElementById('spareAC').innerText = Math.max(0, v.buyDC * 2);
@@ -59,24 +56,15 @@ function calculate(shouldSave = true) {
 function optimize() {
     let v = {};
     fields.forEach(f => v[f] = parseFloat(document.getElementById(f).value) || 0);
-    
     let wAC = Math.ceil(v.forAC * v.probAC / 100);
     let wDC = Math.ceil(v.forDC * v.probDC / 100);
     let total = v.currAC + v.currDC;
-    if (total === 0) return;
 
-    // חישוב כמה AC אנחנו רוצים לפי יעד האחוזים
     let targetAC = Math.round((v.target / 100) * total);
-
-    // הגבלה: אסור שה-AC יהיה כל כך גבוה שלא יישאר מספיק ל-DC המשוקלל
-    // מקסימום AC אפשרי = סה"כ מלאי פחות מינימום DC נדרש
     let maxAllowedAC = total - wDC;
-    
-    // מינימום AC נדרש = מה שהפורקאסט של AC מחייב
     let finalTargetAC = Math.max(wAC, Math.min(targetAC, maxAllowedAC));
 
     let diff = finalTargetAC - v.currAC;
-
     if (diff > 0) {
         document.getElementById('buyAC').value = diff;
         document.getElementById('buyDC').value = 0;
@@ -84,9 +72,33 @@ function optimize() {
         document.getElementById('buyAC').value = 0;
         document.getElementById('buyDC').value = Math.abs(diff);
     }
-    
     calculate();
 }
 
-document.getElementById('scenario').onchange = loadScenarioData;
+function addRow() {
+    let body = document.getElementById('bomBody');
+    let tr = document.createElement('tr');
+    tr.innerHTML = `<td><input type="text" placeholder="תיאור מקט" style="border:none; width:100%"></td>
+                    <td><input type="number" value="0" style="border:none; width:100%"></td>
+                    <td class="no-print"><button onclick="this.parentElement.parentElement.remove()" style="border:none; background:none; cursor:pointer; color:red">❌</button></td>`;
+    body.appendChild(tr);
+}
+
+function exportToExcel() {
+    let data = [];
+    document.querySelectorAll('#bomBody tr').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        data.push({ "פריט": inputs[0].value, "כמות": inputs[1].value, "סוג": "ידני" });
+    });
+    const buyAC = document.getElementById('buyAC').value;
+    const buyDC = document.getElementById('buyDC').value;
+    if (buyAC > 0) data.push({ "פריט": "AC Conversion Kit", "כמות": buyAC, "סוג": "רכש מחושב" });
+    if (buyDC > 0) data.push({ "פריט": "DC Conversion Kit", "כמות": buyDC, "סוג": "רכש מחושב" });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "רכש");
+    XLSX.writeFile(wb, `Order_Scenario_${document.getElementById('scenario').value}.xlsx`);
+}
+
 window.onload = loadScenarioData;
