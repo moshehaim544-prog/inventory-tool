@@ -1,8 +1,34 @@
 const fields = ['forAC', 'probAC', 'forDC', 'probDC', 'currAC', 'currDC', 'buyAC', 'buyDC', 'target'];
 
-function calculate() {
+// פונקציה שטוענת נתונים לפי התרחיש שנבחר
+function loadScenarioData() {
+    const scenarioId = document.getElementById('scenario').value;
+    
+    fields.forEach(f => {
+        const savedValue = localStorage.getItem(`scenario_${scenarioId}_${f}`);
+        if (savedValue !== null) {
+            document.getElementById(f).value = savedValue;
+        } else {
+            // ערכי ברירת מחדל אם התרחיש ריק
+            if (f.includes('prob')) document.getElementById(f).value = 100;
+            else if (f === 'target') document.getElementById(f).value = 78;
+            else document.getElementById(f).value = 0;
+        }
+    });
+    calculate(false); // מחשב בלי לשמור שוב בלופ
+}
+
+// פונקציה שמחשבת ושומרת את הנתונים לתרחיש הנוכחי
+function calculate(shouldSave = true) {
+    const scenarioId = document.getElementById('scenario').value;
     let v = {};
-    fields.forEach(f => v[f] = parseFloat(document.getElementById(f).value) || 0);
+
+    fields.forEach(f => {
+        v[f] = parseFloat(document.getElementById(f).value) || 0;
+        if (shouldSave) {
+            localStorage.setItem(`scenario_${scenarioId}_${f}`, v[f]);
+        }
+    });
 
     // 1. חישוב פורקאסט משוקלל
     let wAC = (v.forAC * v.probAC / 100).toFixed(1);
@@ -42,6 +68,8 @@ function optimize() {
     let target = parseFloat(document.getElementById('target').value) || 0;
     let total = cAC + cDC;
 
+    if (total === 0) return;
+
     let requiredAC = Math.round((target / 100) * total);
     let diff = requiredAC - cAC;
 
@@ -66,5 +94,8 @@ function addRow() {
     body.appendChild(tr);
 }
 
+// עדכון ה-HTML שיקרא לפונקציית הטעינה כשמחליפים תרחיש
+document.getElementById('scenario').onchange = loadScenarioData;
+
 // הפעלה ראשונית
-window.onload = calculate;
+window.onload = loadScenarioData;
